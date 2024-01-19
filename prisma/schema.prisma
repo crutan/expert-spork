@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BodyPart {
+  Legs
+  Arms
+  Chest
+  Back
+  Shoulders
+  Core
+}
+
+model Exercise {
+  id              String            @id @default(uuid())
+  name            String
+  body_part       BodyPart
+  description     String            @db.Text
+  link            String
+  WorkoutExercise WorkoutExercise[]
+}
+
+model Workout {
+  id          String            @id @default(uuid())
+  name        String
+  date        DateTime          @db.Date
+  body_parts  BodyPart[]
+  exercises   WorkoutExercise[]
+}
+
+model WorkoutExercise {
+  id          String   @id @default(uuid())
+  exercise    Exercise @relation(fields: [exerciseId], references: [id])
+  workout     Workout  @relation(fields: [workoutId], references: [id])
+  weight      Int
+  sets        Int
+  reps        Int
+  drop        Boolean  @default(false)
+  drop_sets   Int
+  drop_weight Int
+  drop_reps   Int
+  exerciseId  String
+  workoutId   String
+}
